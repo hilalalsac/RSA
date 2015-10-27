@@ -1,0 +1,134 @@
+package com.example.rsa;
+
+import java.math.BigInteger;
+import java.util.Random;
+
+import com.example.rsa.R;
+
+import android.R.integer;
+import android.R.string;
+import android.os.Bundle;
+import android.app.Activity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+public class MainActivity extends Activity {
+
+	private TextView dText;
+	private TextView Text;
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_main);
+		class myThread extends Thread {
+
+			@Override
+			public synchronized void start() {
+				// TODO Auto-generated method stub
+				super.start();
+			}
+		}
+//		ImageView bimgeview = new ImageView(this);
+
+		//tıklandığında p ve q yu gözterecek butonu burada tanımlayıp oluşturuyoruz.
+		Button btnPay;
+		btnPay = (Button) findViewById(R.id.btnPay);
+
+		int bitLength = 1024; // 1024 bits
+
+		// değişkenleri tanımlama
+
+		final BigInteger p;
+		final BigInteger q;
+		BigInteger n, e, t;
+		BigInteger d;
+		TextView pText, qText;
+		Random rnd = new Random();
+		EditText pText1, qText1;
+		// random p ve q bulma işlemi
+		// p = new BigInteger(bitLength, rnd);
+		// q = new BigInteger(bitLength, rnd);
+
+		// probable prime fonksiyonu ile p ve q sayılarını seçme
+		p = BigInteger.probablePrime(bitLength, rnd);
+		q = BigInteger.probablePrime(bitLength, rnd);
+
+		/*
+		 * teklik çiftlik kontrolü if (p.remainder(new BigInteger("2"))==
+		 * BigInteger.valueOf(0)) { p=p.add(BigInteger.valueOf(1)); }
+		 */
+		// seçtiğimiz sayıların asal olup olmadıklarını miller rabin testi ile
+		// inceliyoruz, asal değilse iki ekleyip tekrar döngüye sokuyoruz.
+		// while (MillerRabin.millerRabin(p) == false) {
+		//
+		// p = p.add(BigInteger.valueOf(2));
+		//
+		// }
+		//
+		//
+		// while (MillerRabin.millerRabin(q) == false) {
+		// q = q.add(BigInteger.valueOf(2));
+		//
+		// }
+
+		// n özel ve ortak anahrar için mod değeri olarak kullanılacaktır.
+
+		n = p.multiply(q);
+
+		// t fi n ifade etmektedir.
+		t = ((p.add(BigInteger.valueOf(-1)))).multiply(q.add(BigInteger
+				.valueOf(-1)));
+		// 1<e<t olmalıdır. e'yi biz seçiyoruz. önerilen e değerini seçtik.
+		e = new BigInteger("65537");
+
+		// Euclid sınıfımızı kullanarak e nin modunun tersini aldık euler fi n'e
+		// göre
+		d = Euclid.modInv(e, n);
+		// en son bulduğumuz d değerini ekrana yazdırdık
+		dText = (TextView) findViewById(R.id.text);
+		dText.setText("d=" + d);
+		// yaptığımız işlemlerin kısa açıklaması
+		Text = (TextView) findViewById(R.id.text1);
+		Text.setText("d'yi hesaplamak için"
+				+ bitLength
+				+ "bitlik random "
+				+ "p ve q sayıları seçildi ve asallıkları miller rabin testi ile kontrol edildi. "
+				+ "p*q=n hesaplandı ve euler phi n bulundu (t=(p-1)*(q-1)) "
+				+ "e=65537 seçilerek uzatılmış öklid algoritması ile e nin mod n e göre tersi olan d sayısı üretildi.");
+
+		btnPay.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+
+				String msg = ("p=" + p);
+
+				Toast.makeText(getBaseContext(), msg, Toast.LENGTH_SHORT)
+						.show();
+
+				String ms = ("q=" + q);
+
+				Toast.makeText(getBaseContext(), ms, Toast.LENGTH_SHORT).show();
+
+			}
+		});
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+
+}
