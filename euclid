@@ -1,0 +1,68 @@
+package com.example.rsa;
+
+import java.math.BigInteger;
+
+public class Euclid {
+	final static BigInteger ZERO = new BigInteger("0");
+	final static BigInteger ONE = new BigInteger("1");
+
+	public static void main(String[] args) {
+
+		// Bir test durumu kurmak-çalıştırmak için
+		BigInteger n = new BigInteger("225");
+		BigInteger b = new BigInteger("119");
+		BigInteger bInv = modInv(b, n);
+
+		if (bInv != null) {
+
+			System.out.println("The inverse is " + bInv);
+
+			System.out.println("Java gets " + b.modInverse(n));
+		} else
+			System.out.println("no inverse");
+	}
+
+	// değerin mod n e göre tersini veren fonksiyon
+	public static BigInteger modInv(BigInteger value, BigInteger n) {
+
+		// tüm başlangıç değerleri ayarlandı
+		BigInteger b0 = value;
+		BigInteger n0 = n;
+		BigInteger t0 = ZERO;
+		BigInteger t = ONE;
+		BigInteger q = n.divide(b0);
+		BigInteger r = n0.subtract(q.multiply(b0));
+
+		// kalan ardışık böllümleri pozitifken dönecek olan döngü.
+		while (r.compareTo(ZERO) > 0) {
+
+			// genişletilmiş öklid algoritmasında çıkarma adımı
+			BigInteger temp = t0.subtract(q.multiply(t));
+
+			// tempin kontrolü yapıldı negatif-pozitifliğe göre
+			if (temp.compareTo(ZERO) > 0)
+				temp = temp.mod(n);
+			if (temp.compareTo(ZERO) < 0)
+				temp = n.subtract(temp.negate().mod(n));
+
+			// gereken değişkenler güncellendi
+			t0 = t;
+			t = temp;
+			n0 = b0;
+			b0 = r;
+			q = n0.divide(b0);
+			r = n0.subtract(q.multiply(b0));
+		}
+
+		// değerin ve n'in obebi yazdırıldı
+		System.out.println("GCD is " + b0);
+
+		// son kotnrol yapıldı
+		if (!b0.equals(ONE))
+			return null;
+
+		else
+			return t.mod(n);
+	}
+
+}
